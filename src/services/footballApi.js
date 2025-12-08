@@ -111,3 +111,23 @@ export const fetchCurrentRound = async () => {
     return null;
   }
 };
+
+export const fetchTeamFixtures = async (teamId, next = 10) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/fixtures?league=39&season=2025&team=${teamId}&next=${next}`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": API_KEY,
+          "x-rapidapi-host": "v3.football.api-sports.io",
+        },
+      }
+    );
+    const data = await response.json();
+    return data.response || [];
+  } catch (error) {
+    console.error("Error fetching team fixtures:", error);
+    return [];
+  }
+};

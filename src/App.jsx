@@ -6,7 +6,8 @@ import Fixtures from "./components/Fixtures";
 import BestScenarios from "./components/BestScenarios";
 import Simulator from "./components/Simulator";
 import ErrorBoundary from "./components/ErrorBoundary";
-
+import FixtureDifficulty from "./components/FixtureDifficulty";
+import { BarChart3 } from "lucide-react"; // Add this icon
 function App() {
   const [activeTab, setActiveTab] = useState("standings");
   const [selectedTeam, setSelectedTeam] = useState({
@@ -19,20 +20,20 @@ function App() {
     <ErrorBoundary>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Header */}
-        <header className="bg-black/30 backdrop-blur-sm border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <header className="border-b bg-black/30 backdrop-blur-sm border-white/10">
+          <div className="px-4 py-4 mx-auto max-w-7xl md:py-6">
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
               <div className="flex items-center gap-3">
-                <Trophy className="w-6 h-6 md:w-8 md:h-8 text-purple-400" />
-                <h1 className="text-xl md:text-2xl font-bold text-white">
+                <Trophy className="w-6 h-6 text-purple-400 md:w-8 md:h-8" />
+                <h1 className="text-xl font-bold text-white md:text-2xl">
                   PL Position Tracker
                 </h1>
               </div>
 
               {/* Team Selector */}
 
-              <div className="flex items-center gap-2 text-xs md:text-sm text-gray-300">
-                <span className="px-2 md:px-3 py-1 bg-red-600 rounded-full font-semibold">
+              <div className="flex items-center gap-2 text-xs text-gray-300 md:text-sm">
+                <span className="px-2 py-1 font-semibold bg-red-600 rounded-full md:px-3">
                   LIVE
                 </span>
                 <span>Premier League 2025/26</span>
@@ -40,7 +41,7 @@ function App() {
             </div>
           </div>
         </header>
-        <div className="w-full md:w-auto mt-3 flex justify-center">
+        <div className="flex justify-center w-full mt-3 md:w-auto">
           <TeamSelector
             selectedTeam={selectedTeam}
             onTeamSelect={setSelectedTeam}
@@ -48,8 +49,8 @@ function App() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="max-w-7xl mx-auto px-4 mt-6">
-          <div className="grid grid-cols-2 md:flex gap-2 bg-black/20 backdrop-blur-sm p-1 rounded-lg border border-white/10">
+        <div className="px-4 mx-auto mt-6 max-w-7xl">
+          <div className="grid grid-cols-2 gap-2 p-1 border rounded-lg md:flex bg-black/20 backdrop-blur-sm border-white/10">
             <button
               onClick={() => setActiveTab("standings")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
@@ -59,7 +60,7 @@ function App() {
               }`}
             >
               <Trophy className="w-5 h-5" />
-              <span className="font-semibold text-sm md:text-base">
+              <span className="text-sm font-semibold md:text-base">
                 Standings
               </span>
             </button>
@@ -72,8 +73,21 @@ function App() {
               }`}
             >
               <Target className="w-5 h-5" />
-              <span className="font-semibold text-sm md:text-base">
+              <span className="text-sm font-semibold md:text-base">
                 Fixtures
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab("difficulty")}
+              className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
+                activeTab === "difficulty"
+                  ? "bg-purple-600 text-white"
+                  : "text-gray-300 hover:bg-white/5"
+              }`}
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span className="text-sm font-semibold md:text-base">
+                Difficulty
               </span>
             </button>
             <button
@@ -85,7 +99,7 @@ function App() {
               }`}
             >
               <TrendingUp className="w-5 h-5" />
-              <span className="font-semibold text-sm md:text-base">
+              <span className="text-sm font-semibold md:text-base">
                 Scenarios
               </span>
             </button>
@@ -98,7 +112,7 @@ function App() {
               }`}
             >
               <Calculator className="w-5 h-5" />
-              <span className="font-semibold text-sm md:text-base">
+              <span className="text-sm font-semibold md:text-base">
                 Simulator
               </span>
             </button>
@@ -106,13 +120,16 @@ function App() {
         </div>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 py-8">
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 p-8">
+        <main className="px-4 py-8 mx-auto max-w-7xl">
+          <div className="p-8 border bg-white/5 backdrop-blur-sm rounded-xl border-white/10">
             {activeTab === "standings" && (
               <Standings selectedTeam={selectedTeam} />
             )}
             {activeTab === "fixtures" && (
               <Fixtures selectedTeam={selectedTeam} />
+            )}
+            {activeTab === "difficulty" && (
+              <FixtureDifficulty selectedTeam={selectedTeam} />
             )}
             {activeTab === "scenarios" && (
               <BestScenarios selectedTeam={selectedTeam} />
@@ -124,15 +141,15 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className="bg-black/30 backdrop-blur-sm border-t border-white/10 mt-12">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="text-gray-400 text-sm text-center md:text-left">
+        <footer className="mt-12 border-t bg-black/30 backdrop-blur-sm border-white/10">
+          <div className="px-4 py-6 mx-auto max-w-7xl">
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+              <div className="text-sm text-center text-gray-400 md:text-left">
                 <p>
                   Built by{" "}
-                  <span className="text-white font-semibold">Nabil Wazze</span>
+                  <span className="font-semibold text-white">Nabil Wazze</span>
                 </p>
-                <p className="text-xs mt-1">
+                <p className="mt-1 text-xs">
                   Track your favorite team's league position & best scenarios
                 </p>
               </div>
@@ -141,7 +158,7 @@ function App() {
                   href="https://newnabil.netlify.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-all"
+                  className="px-4 py-2 text-sm font-semibold text-white transition-all bg-purple-600 rounded-lg hover:bg-purple-700"
                 >
                   View Portfolio
                 </a>
@@ -149,7 +166,7 @@ function App() {
                   href="https://github.com/nabilwazze"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-semibold transition-all"
+                  className="px-4 py-2 text-sm font-semibold text-white transition-all rounded-lg bg-white/10 hover:bg-white/20"
                 >
                   GitHub
                 </a>
