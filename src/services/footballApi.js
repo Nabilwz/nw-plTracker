@@ -91,3 +91,23 @@ export const fetchRounds = async () => {
     return [];
   }
 };
+
+export const fetchCurrentRound = async () => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/fixtures/rounds?league=39&season=2025&current=true`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": API_KEY,
+          "x-rapidapi-host": "v3.football.api-sports.io",
+        },
+      }
+    );
+    const data = await response.json();
+    return data.response?.[0] || null;
+  } catch (error) {
+    console.error("Error fetching current round:", error);
+    return null;
+  }
+};
