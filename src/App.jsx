@@ -8,6 +8,8 @@ import Simulator from "./components/Simulator";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FixtureDifficulty from "./components/FixtureDifficulty";
 import { BarChart3 } from "lucide-react"; // Add this icon
+import RivalTracker from "./components/RivalTracker";
+import { Swords } from "lucide-react"; // Add this icon
 function App() {
   const [activeTab, setActiveTab] = useState("standings");
   const [selectedTeam, setSelectedTeam] = useState({
@@ -91,6 +93,17 @@ function App() {
               </span>
             </button>
             <button
+              onClick={() => setActiveTab("rival")}
+              className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
+                activeTab === "rival"
+                  ? "bg-purple-600 text-white"
+                  : "text-gray-300 hover:bg-white/5"
+              }`}
+            >
+              <Swords className="w-5 h-5" />
+              <span className="text-sm font-semibold md:text-base">Rival</span>
+            </button>
+            <button
               onClick={() => setActiveTab("scenarios")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
                 activeTab === "scenarios"
@@ -130,6 +143,9 @@ function App() {
             )}
             {activeTab === "difficulty" && (
               <FixtureDifficulty selectedTeam={selectedTeam} />
+            )}
+            {activeTab === "rival" && (
+              <RivalTracker selectedTeam={selectedTeam} />
             )}
             {activeTab === "scenarios" && (
               <BestScenarios selectedTeam={selectedTeam} />
