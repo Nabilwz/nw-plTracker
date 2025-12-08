@@ -18,6 +18,8 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import ShareModal from "./ShareModal";
+import ShareButton from "./ShareButton";
 
 // ========== HELPER FUNCTIONS (OUTSIDE COMPONENT) ==========
 
@@ -38,20 +40,17 @@ const calculateGDScenarios = (
   currentPosition
 ) => {
   const notes = [];
-  const projectedPoints = selectedTeamPoints + 3; // After a win
+  const projectedPoints = selectedTeamPoints + 3;
 
-  // Get teams above that would have equal points after selected team wins
   const teamsAbove = standings.slice(0, currentPosition - 1);
 
   teamsAbove.forEach((team) => {
-    // If this team would have the same points as us after we win
     if (team.points === projectedPoints) {
       const gdDiff = team.goalsDiff - selectedTeamGD;
       const teamPos =
         standings.findIndex((t) => t.team.id === team.team.id) + 1;
 
       if (gdDiff > 0) {
-        // They have better GD, we need to win by enough goals
         const goalsNeeded = gdDiff + 1;
         notes.push({
           type: "overtake",
@@ -66,7 +65,6 @@ const calculateGDScenarios = (
           )}) on GD`,
         });
       } else if (gdDiff === 0) {
-        // Same GD, goals scored becomes tiebreaker
         const selectedGoalsFor =
           standings.find((t) => t.team.id === selectedTeam.id)?.all?.goals
             ?.for || 0;
@@ -99,7 +97,6 @@ const calculateGDScenarios = (
           });
         }
       } else {
-        // We already have better GD
         notes.push({
           type: "ahead",
           team: team.team.name,
@@ -114,17 +111,14 @@ const calculateGDScenarios = (
     }
   });
 
-  // Check teams below that could match our points if they also win
   const teamsBelow = standings.slice(currentPosition);
   teamsBelow.forEach((team) => {
-    // If they're only 3 points behind (would match us if we both win)
     if (team.points === selectedTeamPoints) {
       const gdDiff = selectedTeamGD - team.goalsDiff;
       const teamPos =
         standings.findIndex((t) => t.team.id === team.team.id) + 1;
 
       if (gdDiff <= 3 && gdDiff >= -3) {
-        // Close GD battle
         if (gdDiff < 0) {
           notes.push({
             type: "threat",
@@ -148,7 +142,6 @@ const calculateGDScenarios = (
     }
   });
 
-  // Sort notes: overtake opportunities first, then ahead confirmations, then warnings, then threats
   const priority = { overtake: 1, ahead: 2, warning: 3, threat: 4 };
   notes.sort((a, b) => priority[a.type] - priority[b.type]);
 
@@ -161,13 +154,11 @@ const calculateBestScenarios = (
   selectedTeam,
   position
 ) => {
-  // Get teams above and below selected team
   const teamsAbove = standings.slice(0, position - 1);
   const teamsBelow = standings.slice(position);
   const teamsAboveIds = teamsAbove.map((t) => t.team.id);
   const teamsBelowIds = teamsBelow.map((t) => t.team.id);
 
-  // Get selected team's current points and GD
   const selectedTeamData = standings.find((t) => t.team.id === selectedTeam.id);
   const selectedTeamPoints = selectedTeamData?.points || 0;
   const selectedTeamGD = selectedTeamData?.goalsDiff || 0;
@@ -187,7 +178,6 @@ const calculateBestScenarios = (
 
     let scenario = null;
 
-    // Get team positions and points for calculations
     const homeTeamData = standings.find((t) => t.team.id === homeTeam.id);
     const awayTeamData = standings.find((t) => t.team.id === awayTeam.id);
     const homePos = standings.findIndex((t) => t.team.id === homeTeam.id) + 1;
@@ -195,11 +185,9 @@ const calculateBestScenarios = (
     const homePoints = homeTeamData?.points || 0;
     const awayPoints = awayTeamData?.points || 0;
 
-    // Calculate point gaps for importance weighting
     const homeGapFromSelected = Math.abs(homePoints - selectedTeamPoints);
     const awayGapFromSelected = Math.abs(awayPoints - selectedTeamPoints);
 
-    // CASE 1: Selected team's own match (HIGHEST PRIORITY)
     if (isSelectedTeamMatch) {
       const opponent = homeTeam.id === selectedTeam.id ? awayTeam : homeTeam;
       const opponentPos = homeTeam.id === selectedTeam.id ? awayPos : homePos;
@@ -207,7 +195,6 @@ const calculateBestScenarios = (
         homeTeam.id === selectedTeam.id ? awayTeamData : homeTeamData;
       const isHome = homeTeam.id === selectedTeam.id;
 
-      // Calculate goal difference scenarios
       const gdNotes = calculateGDScenarios(
         standings,
         selectedTeam,
@@ -232,9 +219,7 @@ const calculateBestScenarios = (
         affectedTeams: [{ id: selectedTeam.id, pointsChange: 3 }],
         gdNotes,
       };
-    }
-    // CASE 2: Both teams are ABOVE selected team - want DRAW
-    else if (homeIsAbove && awayIsAbove) {
+    } else if (homeIsAbove && awayIsAbove) {
       const avgGap = (homeGapFromSelected + awayGapFromSelected) / 2;
       const importanceBoost = Math.max(0, 20 - avgGap);
 
@@ -255,9 +240,7 @@ const calculateBestScenarios = (
           { id: awayTeam.id, pointsChange: 1 },
         ],
       };
-    }
-    // CASE 3: Both teams are BELOW selected team - want DRAW
-    else if (homeIsBelow && awayIsBelow) {
+    } else if (homeIsBelow && awayIsBelow) {
       const avgGap = (homeGapFromSelected + awayGapFromSelected) / 2;
       const importanceBoost = Math.max(0, 15 - avgGap);
 
@@ -283,9 +266,7 @@ const calculateBestScenarios = (
           ],
         };
       }
-    }
-    // CASE 4: Home team is ABOVE, Away team is BELOW - want Away WIN
-    else if (homeIsAbove && awayIsBelow) {
+    } else if (homeIsAbove && awayIsBelow) {
       const importanceBoost = Math.max(0, 20 - homeGapFromSelected);
 
       scenario = {
@@ -305,9 +286,7 @@ const calculateBestScenarios = (
           { id: awayTeam.id, pointsChange: 3 },
         ],
       };
-    }
-    // CASE 5: Home team is BELOW, Away team is ABOVE - want Home WIN
-    else if (homeIsBelow && awayIsAbove) {
+    } else if (homeIsBelow && awayIsAbove) {
       const importanceBoost = Math.max(0, 20 - awayGapFromSelected);
 
       scenario = {
@@ -327,9 +306,7 @@ const calculateBestScenarios = (
           { id: awayTeam.id, pointsChange: 0 },
         ],
       };
-    }
-    // CASE 6: Home team is ABOVE only - want Home to LOSE
-    else if (homeIsAbove && !awayIsAbove && !awayIsBelow) {
+    } else if (homeIsAbove && !awayIsAbove && !awayIsBelow) {
       const importanceBoost = Math.max(0, 20 - homeGapFromSelected);
 
       scenario = {
@@ -347,9 +324,7 @@ const calculateBestScenarios = (
           { id: awayTeam.id, pointsChange: 3 },
         ],
       };
-    }
-    // CASE 7: Away team is ABOVE only - want Away to LOSE
-    else if (awayIsAbove && !homeIsAbove && !homeIsBelow) {
+    } else if (awayIsAbove && !homeIsAbove && !homeIsBelow) {
       const importanceBoost = Math.max(0, 20 - awayGapFromSelected);
 
       scenario = {
@@ -367,9 +342,7 @@ const calculateBestScenarios = (
           { id: awayTeam.id, pointsChange: 0 },
         ],
       };
-    }
-    // CASE 8: Home team is BELOW only - want Home to LOSE (if threatening)
-    else if (homeIsBelow && !awayIsAbove && !awayIsBelow) {
+    } else if (homeIsBelow && !awayIsAbove && !awayIsBelow) {
       const couldOvertake = homePoints + 3 >= selectedTeamPoints;
       if (couldOvertake) {
         scenario = {
@@ -388,9 +361,7 @@ const calculateBestScenarios = (
           ],
         };
       }
-    }
-    // CASE 9: Away team is BELOW only - want Away to LOSE (if threatening)
-    else if (awayIsBelow && !homeIsAbove && !homeIsBelow) {
+    } else if (awayIsBelow && !homeIsAbove && !homeIsBelow) {
       const couldOvertake = awayPoints + 3 >= selectedTeamPoints;
       if (couldOvertake) {
         scenario = {
@@ -539,6 +510,7 @@ function BestScenarios({ selectedTeam }) {
   const [projectedPosition, setProjectedPosition] = useState(null);
   const [currentRound, setCurrentRound] = useState(null);
   const [showAllScenarios, setShowAllScenarios] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const selectedTeamRef = useRef(null);
 
   const loadScenariosData = useCallback(async () => {
@@ -636,9 +608,12 @@ function BestScenarios({ selectedTeam }) {
     return (
       <div className="space-y-6">
         <div className="mb-6 text-center">
-          <h2 className="mb-2 text-2xl font-bold text-white">
-            Best Match Scenarios for {selectedTeam.name}
-          </h2>
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <h2 className="text-2xl font-bold text-white">
+              Best Match Scenarios for {selectedTeam.name}
+            </h2>
+            <ShareButton onClick={() => setIsShareModalOpen(true)} />
+          </div>
           <div className="flex items-center justify-center gap-2 mt-4">
             <Trophy className="w-8 h-8 text-yellow-400" />
             <span className="text-xl font-bold text-yellow-400">
@@ -708,6 +683,18 @@ function BestScenarios({ selectedTeam }) {
               </div>
             ))}
         </div>
+
+        {/* Share Modal */}
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          selectedTeam={selectedTeam}
+          teamPosition={teamPosition}
+          teamData={teamData}
+          scenarios={scenarios}
+          projectedPosition={projectedPosition}
+          isPremium={false}
+        />
       </div>
     );
   }
@@ -717,9 +704,12 @@ function BestScenarios({ selectedTeam }) {
     return (
       <div className="space-y-6">
         <div className="mb-6 text-center">
-          <h2 className="mb-2 text-2xl font-bold text-white">
-            Best Match Scenarios for {selectedTeam.name}
-          </h2>
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <h2 className="text-2xl font-bold text-white">
+              Best Match Scenarios for {selectedTeam.name}
+            </h2>
+            <ShareButton onClick={() => setIsShareModalOpen(true)} />
+          </div>
           <p className="text-gray-400">
             Current Position:{" "}
             <span className="font-bold text-white">#{teamPosition} (Last)</span>{" "}
@@ -805,7 +795,6 @@ function BestScenarios({ selectedTeam }) {
               <div className="pt-3 border-t border-white/10">
                 <p className="text-sm text-gray-300">{scenario.reason}</p>
 
-                {/* Goal Difference Notes */}
                 {scenario.gdNotes && scenario.gdNotes.length > 0 && (
                   <div className="mt-3 space-y-2">
                     <p className="text-xs font-semibold text-purple-400 uppercase">
@@ -839,6 +828,18 @@ function BestScenarios({ selectedTeam }) {
             </div>
           ))}
         </div>
+
+        {/* Share Modal */}
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          selectedTeam={selectedTeam}
+          teamPosition={teamPosition}
+          teamData={teamData}
+          scenarios={scenarios}
+          projectedPosition={projectedPosition}
+          isPremium={false}
+        />
       </div>
     );
   }
@@ -848,9 +849,12 @@ function BestScenarios({ selectedTeam }) {
     <div className="space-y-6">
       {/* Header */}
       <div className="mb-6 text-center">
-        <h2 className="mb-2 text-2xl font-bold text-white">
-          Best Match Scenarios for {selectedTeam.name}
-        </h2>
+        <div className="flex flex-col items-center justify-center gap-4 mb-2 sm:flex-row">
+          <h2 className="text-2xl font-bold text-white">
+            Best Match Scenarios for {selectedTeam.name}
+          </h2>
+          <ShareButton onClick={() => setIsShareModalOpen(true)} />
+        </div>
         <p className="text-gray-400">
           Current Position:{" "}
           <span className="font-bold text-white">#{teamPosition}</span> with{" "}
@@ -1088,7 +1092,6 @@ function BestScenarios({ selectedTeam }) {
               )}
             </p>
 
-            {/* Note about GD tiebreakers */}
             <p className="mt-2 text-xs text-gray-500">
               💡 Note: Position projections assume standard wins. Check GD
               scenarios above for exact goal margins needed to overtake teams on
@@ -1168,6 +1171,18 @@ function BestScenarios({ selectedTeam }) {
           </p>
         </div>
       )}
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        selectedTeam={selectedTeam}
+        teamPosition={teamPosition}
+        teamData={teamData}
+        scenarios={scenarios}
+        projectedPosition={projectedPosition}
+        isPremium={false}
+      />
     </div>
   );
 }
