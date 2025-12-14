@@ -467,7 +467,7 @@ function AIPredictions({ selectedTeam }) {
       )}
 
       {/* Tab Selector */}
-      <div className="flex justify-center gap-2">
+      <div className="flex flex-wrap justify-center gap-2">
         <button
           onClick={() => setActiveTab("matches")}
           className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
@@ -495,7 +495,7 @@ function AIPredictions({ selectedTeam }) {
       {/* Match Predictions Tab */}
       {activeTab === "matches" && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
               <Sparkles className="w-5 h-5 text-yellow-400" />
               Upcoming Match Predictions
@@ -526,7 +526,7 @@ function AIPredictions({ selectedTeam }) {
                   className="p-4 transition-all cursor-pointer hover:bg-white/5"
                   onClick={() => setExpandedMatch(isExpanded ? null : index)}
                 >
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex flex-col gap-4 mb-3 md:flex-row md:items-center md:justify-between">
                     {/* Home Team */}
                     <div className="flex items-center flex-1 gap-3">
                       <img
@@ -545,7 +545,7 @@ function AIPredictions({ selectedTeam }) {
                     </div>
 
                     {/* Predicted Score */}
-                    <div className="flex flex-col items-center px-6">
+                    <div className="flex flex-col items-center px-6 text-center">
                       <div className="flex items-center gap-2 text-2xl font-bold">
                         <span
                           className={
@@ -712,13 +712,14 @@ function AIPredictions({ selectedTeam }) {
             </span>
           </div>
 
-          <div className="overflow-hidden border rounded-xl border-white/10">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-gray-400 border-b border-white/10 bg-white/5">
-                  <th className="px-4 py-3 text-left">Pos</th>
-                  <th className="px-4 py-3 text-left">Team</th>
-                  <th className="px-2 py-3 text-center">Pts</th>
+      <div className="overflow-hidden border rounded-xl border-white/10">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[480px]">
+                <thead>
+                  <tr className="text-gray-400 border-b border-white/10 bg-white/5">
+                    <th className="px-4 py-3 text-left">Pos</th>
+                    <th className="px-4 py-3 text-left">Team</th>
+                    <th className="px-2 py-3 text-center">Pts</th>
                   <th className="hidden px-2 py-3 text-center md:table-cell">
                     <Trophy className="inline w-4 h-4 text-yellow-400" />
                   </th>
@@ -729,11 +730,11 @@ function AIPredictions({ selectedTeam }) {
                     <AlertTriangle className="inline w-4 h-4 text-red-400" />
                   </th>
                 </tr>
-              </thead>
-              <tbody>
-                {seasonProjection.map((team, index) => {
-                  const position = index + 1;
-                  const isSelectedTeam = team.team.id === selectedTeam.id;
+                </thead>
+                <tbody>
+                  {seasonProjection.map((team, index) => {
+                    const position = index + 1;
+                    const isSelectedTeam = team.team.id === selectedTeam.id;
 
                   return (
                     <tr
@@ -818,9 +819,10 @@ function AIPredictions({ selectedTeam }) {
                       </td>
                     </tr>
                   );
-                })}
-              </tbody>
-            </table>
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Legend */}

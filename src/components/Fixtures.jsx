@@ -61,7 +61,7 @@ function Fixtures({ selectedTeam }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl font-bold text-white">Upcoming Fixtures</h2>
         <button
           onClick={handleRefresh}
@@ -89,42 +89,44 @@ function Fixtures({ selectedTeam }) {
                 : "bg-white/5 border-white/10"
             }`}
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+            <div className="flex flex-col gap-2 mb-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
                 <Calendar className="w-4 h-4" />
                 <span>{formatDate(fixture.fixture.date)}</span>
                 <Clock className="w-4 h-4 ml-2" />
                 <span>{formatTime(fixture.fixture.date)}</span>
               </div>
-              {isSelectedTeamMatch && (
-                <span className="px-2 py-1 bg-purple-600 text-white text-xs font-bold rounded">
-                  {selectedTeam.name.toUpperCase()}
-                </span>
-              )}
+              <div className="flex items-center justify-start gap-2 sm:justify-end">
+                {isSelectedTeamMatch && (
+                  <span className="px-2 py-1 bg-purple-600 text-white text-xs font-bold rounded">
+                    {selectedTeam.name.toUpperCase()}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
               {/* Home Team */}
-              <div className="flex items-center gap-3 flex-1">
+              <div className="flex items-center justify-center gap-3 flex-1">
                 <img
                   src={fixture.teams.home.logo}
                   alt={fixture.teams.home.name}
                   className="w-8 h-8"
                   loading="lazy"
                 />
-                <span className="text-white font-semibold">
+                <span className="text-white font-semibold text-center sm:text-left">
                   {fixture.teams.home.name}
                 </span>
               </div>
 
               {/* VS */}
               <div className="px-4">
-                <span className="text-gray-400 font-bold">VS</span>
+                <span className="font-bold text-gray-400">VS</span>
               </div>
 
               {/* Away Team */}
-              <div className="flex items-center gap-3 flex-1 justify-end">
-                <span className="text-white font-semibold">
+              <div className="flex items-center justify-center gap-3 flex-1 sm:justify-end">
+                <span className="text-white font-semibold text-center sm:text-right">
                   {fixture.teams.away.name}
                 </span>
                 <img

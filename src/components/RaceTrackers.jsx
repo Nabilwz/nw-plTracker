@@ -119,7 +119,7 @@ const RaceTeamRow = ({
     <div
       className={`p-4 rounded-xl border transition-all hover:scale-[1.01] ${getBgColor()}`}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         {/* Position & Team */}
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-black/30">
@@ -152,7 +152,7 @@ const RaceTeamRow = ({
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center justify-between gap-4 md:gap-6">
           {/* Form */}
           <div className="hidden md:block">
             <p className="mb-1 text-xs text-gray-500">Form</p>
@@ -212,7 +212,7 @@ const HeadToHeadFixtures = ({ fixtures, title }) => {
         {fixtures.slice(0, 5).map((fixture, index) => (
           <div
             key={index}
-            className="flex items-center justify-between p-3 rounded-lg bg-white/5"
+            className="flex flex-col items-center justify-between gap-3 p-3 rounded-lg bg-white/5 sm:flex-row"
           >
             <div className="flex items-center gap-2">
               <img src={fixture.teams.home.logo} alt="" className="w-6 h-6" />
@@ -333,7 +333,7 @@ function RaceTrackers({ selectedTeam }) {
 
       {/* Race Selector Tabs */}
       <div className="flex justify-center">
-        <div className="inline-flex gap-2 p-1 border rounded-xl bg-black/30 border-white/10">
+        <div className="inline-flex flex-wrap justify-center gap-2 p-1 border rounded-xl bg-black/30 border-white/10">
           <button
             onClick={() => setActiveRace("title")}
             className={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${
@@ -729,7 +729,7 @@ function RaceTrackers({ selectedTeam }) {
       {/* Your Team Position Indicator */}
       {standings.length > 0 && (
         <div className="p-4 border rounded-xl bg-purple-600/20 border-purple-500/30">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <img src={selectedTeam.logo} alt="" className="w-10 h-10" />
               <div>
@@ -742,7 +742,7 @@ function RaceTrackers({ selectedTeam }) {
                 </p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-left md:text-right">
               <p className="text-sm text-gray-400">
                 {standings.findIndex((t) => t.team.id === selectedTeam.id) +
                   1 <=

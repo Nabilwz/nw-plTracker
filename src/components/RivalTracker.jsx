@@ -395,19 +395,19 @@ function RivalTracker({ selectedTeam }) {
                 key={index}
                 className="p-4 border rounded-lg bg-black/30 border-red-500/20"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                <div className="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
                     <Calendar className="w-4 h-4" />
                     <span>{formatDate(scenario.fixture.fixture.date)}</span>
                     <Clock className="w-4 h-4 ml-2" />
                     <span>{formatTime(scenario.fixture.fixture.date)}</span>
                   </div>
-                  <span className="px-3 py-1 text-xs font-bold text-red-400 rounded-full bg-red-600/30">
+                  <span className="self-start px-3 py-1 text-xs font-bold text-red-400 rounded-full bg-red-600/30 sm:self-auto">
                     😈 {scenario.recommendation}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
                     <img
                       src={scenario.fixture.teams.home.logo}
@@ -464,14 +464,14 @@ function RivalTracker({ selectedTeam }) {
             return (
               <div
                 key={fixture.fixture.id}
-                className="flex items-center justify-between p-4 transition-all border rounded-lg bg-black/20 border-white/5 hover:border-red-500/30"
+                className="flex flex-col gap-4 p-4 transition-all border rounded-lg bg-black/20 border-white/5 sm:flex-row sm:items-center sm:justify-between hover:border-red-500/30"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center justify-center w-8 h-8 text-sm font-bold text-gray-500 rounded-full bg-white/10">
                     {index + 1}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
                       <Calendar className="w-3 h-3" />
                       <span>{formatDate(fixture.fixture.date)}</span>
                       {fixture.isHome ? (
@@ -487,25 +487,30 @@ function RivalTracker({ selectedTeam }) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <img src={fixture.opponent.logo} alt="" className="w-8 h-8" />
-                  <div className="text-right">
-                    <p className="font-semibold text-white">
-                      {fixture.isHome ? "vs" : "@"} {fixture.opponent.name}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {getOrdinalSuffix(fixture.opponentPosition)} •{" "}
-                      {fixture.opponentPoints} pts
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {fixture.difficulty >= 7 ? (
-                    <div className="flex items-center gap-1 px-3 py-1 text-green-400 rounded-full bg-green-600/20">
-                      <PartyPopper className="w-4 h-4" />
-                      <span className="text-xs font-semibold">Tough!</span>
+                <div className="flex items-center justify-between gap-3 sm:w-1/2 sm:justify-end">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={fixture.opponent.logo}
+                      alt=""
+                      className="w-8 h-8"
+                    />
+                    <div className="text-left sm:text-right">
+                      <p className="font-semibold text-white">
+                        {fixture.isHome ? "vs" : "@"} {fixture.opponent.name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {getOrdinalSuffix(fixture.opponentPosition)} •{" "}
+                        {fixture.opponentPoints} pts
+                      </p>
                     </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 sm:justify-end">
+                    {fixture.difficulty >= 7 ? (
+                      <div className="flex items-center gap-1 px-3 py-1 text-green-400 rounded-full bg-green-600/20">
+                        <PartyPopper className="w-4 h-4" />
+                        <span className="text-xs font-semibold">Tough!</span>
+                      </div>
                   ) : fixture.difficulty <= 4 ? (
                     <div className="flex items-center gap-1 px-3 py-1 text-red-400 rounded-full bg-red-600/20">
                       <Frown className="w-4 h-4" />
@@ -516,7 +521,8 @@ function RivalTracker({ selectedTeam }) {
                       <AlertTriangle className="w-4 h-4" />
                       <span className="text-xs font-semibold">Medium</span>
                     </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -528,7 +534,7 @@ function RivalTracker({ selectedTeam }) {
           <h4 className="mb-2 text-sm font-semibold text-red-400">
             📊 Fixture Analysis for {rival.name}
           </h4>
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
             <div>
               <p className="text-2xl font-bold text-green-400">
                 {rivalFixtures.filter((f) => f.difficulty >= 7).length}
