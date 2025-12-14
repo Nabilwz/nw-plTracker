@@ -12,6 +12,8 @@ import RivalTracker from "./components/RivalTracker";
 import { Swords } from "lucide-react"; // Add this icon
 import RaceTrackers from "./components/RaceTrackers";
 import { Flag } from "lucide-react"; // Add this icon
+import AIPredictions from "./components/AIPredictions";
+import { Brain } from "lucide-react";
 function App() {
   const [activeTab, setActiveTab] = useState("standings");
   const [selectedTeam, setSelectedTeam] = useState({
@@ -117,6 +119,17 @@ function App() {
               <span className="text-sm font-semibold md:text-base">Races</span>
             </button>
             <button
+              onClick={() => setActiveTab("ai")}
+              className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
+                activeTab === "ai"
+                  ? "bg-purple-600 text-white"
+                  : "text-gray-300 hover:bg-white/5"
+              }`}
+            >
+              <Brain className="w-5 h-5" />
+              <span className="text-sm font-semibold md:text-base">AI</span>
+            </button>
+            <button
               onClick={() => setActiveTab("scenarios")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
                 activeTab === "scenarios"
@@ -162,6 +175,9 @@ function App() {
             )}
             {activeTab === "races" && (
               <RaceTrackers selectedTeam={selectedTeam} />
+            )}
+            {activeTab === "ai" && (
+              <AIPredictions selectedTeam={selectedTeam} />
             )}
             {activeTab === "scenarios" && (
               <BestScenarios selectedTeam={selectedTeam} />
