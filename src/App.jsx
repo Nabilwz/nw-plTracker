@@ -14,6 +14,8 @@ import RaceTrackers from "./components/RaceTrackers";
 import { Flag } from "lucide-react"; // Add this icon
 import AIPredictions from "./components/AIPredictions";
 import { Brain } from "lucide-react";
+import { trackFeature, trackTeamSelect } from "./utils/analytics";
+
 function App() {
   const [activeTab, setActiveTab] = useState("standings");
   const [selectedTeam, setSelectedTeam] = useState({
@@ -21,7 +23,16 @@ function App() {
     name: "Manchester United",
     logo: "https://media.api-sports.io/football/teams/33.png",
   });
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    trackFeature(tab); // This tracks which features are most used!
+  };
 
+  // Track team selection:
+  const handleTeamSelect = (team) => {
+    setSelectedTeam(team);
+    trackTeamSelect(team.name, team.id);
+  };
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -50,7 +61,7 @@ function App() {
         <div className="flex justify-center w-full mt-3 md:w-auto">
           <TeamSelector
             selectedTeam={selectedTeam}
-            onTeamSelect={setSelectedTeam}
+            onTeamSelect={handleTeamSelect}
           />
         </div>
 
@@ -58,7 +69,7 @@ function App() {
         <div className="px-4 mx-auto mt-6 max-w-7xl">
           <div className="grid grid-cols-2 gap-2 p-1 border rounded-lg md:flex bg-black/20 backdrop-blur-sm border-white/10">
             <button
-              onClick={() => setActiveTab("standings")}
+              onClick={() => handleTabChange("standings")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
                 activeTab === "standings"
                   ? "bg-purple-600 text-white"
@@ -71,7 +82,7 @@ function App() {
               </span>
             </button>
             <button
-              onClick={() => setActiveTab("fixtures")}
+              onClick={() => handleTabChange("fixtures")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
                 activeTab === "fixtures"
                   ? "bg-purple-600 text-white"
@@ -84,7 +95,7 @@ function App() {
               </span>
             </button>
             <button
-              onClick={() => setActiveTab("difficulty")}
+              onClick={() => handleTabChange("difficulty")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
                 activeTab === "difficulty"
                   ? "bg-purple-600 text-white"
@@ -97,7 +108,7 @@ function App() {
               </span>
             </button>
             <button
-              onClick={() => setActiveTab("rival")}
+              onClick={() => handleTabChange("rival")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
                 activeTab === "rival"
                   ? "bg-purple-600 text-white"
@@ -108,7 +119,7 @@ function App() {
               <span className="text-sm font-semibold md:text-base">Rival</span>
             </button>
             <button
-              onClick={() => setActiveTab("races")}
+              onClick={() => handleTabChange("races")}
               className={`flex items-center justify-center gap-2 px-3 md:px-4 py-3 rounded-md transition-all ${
                 activeTab === "races"
                   ? "bg-purple-600 text-white"
